@@ -17,18 +17,36 @@ var scaleFactor;
 var most=100;
 var K_;
 var U_;
+var reset;
+
 
 function setup() {
   var cnv = createCanvas(800, 400);
-   cnv.parent("myContainer");
-  textSize(14);
-  textFont("Helvetica");
+  cnv.parent("myContainer");
+  textSize(16);
+  textFont("Georgia");
   textStyle(NORMAL);
 
-  nodeNumSlider = createSlider(3,17,11);
+  nodeNumSlider = createSlider(3,17,9);
   nodeNumSlider.parent("sliderPos");
-  nodeNumSlider.size(300);  
+  nodeNumSlider.size(240);  
   
+  reset = createButton('Reset', 1);
+  reset.parent("myContainer2");
+  //reset.position();
+
+  reset.mousePressed(function()  {
+    nodes.length = 0;
+    nodeNum = nodeNumSlider.value();
+   for (var i = 0; i<nodeNum; i++) {
+    nodes.push(new Node(map(i, 0, nodeNum-1, 30, width-80), height/2));
+  }
+   initialU = calculateU();
+   initialK = calculateK();
+   initialAction = calculateK() - calculateU();  
+   most = max(initialAction, initialU, abs(initialK));  
+    });
+
 
   stroke(100);
   noStroke();
@@ -145,32 +163,29 @@ function calculateU() {
 
 
 function getPE(q) {
-  if (potential == 1){
+  switch (potential) {
+  case '1':
       return -(2000/(nodeNum*nodeNum)*(q.y) -3800000/(nodeNum*nodeNum)  );
-  }
     
-  else if (potential == 2) {
-    return -(2000/(nodeNum*nodeNum)*(q.x) - 1900000/(nodeNum*nodeNum) );
-  }
+  case '2': 
+    return -(2000/(nodeNum*nodeNum)*(q.x) - 1900000/(nodeNum*nodeNum) );  
       
-  else if (potential == 3) {
+  case '3': 
      if (q.x + q.y > width/2 + height/2 ) {
         return -(30000);
       }
       else {
         return 0;
       }
-  }
-    
-  else if (potential == 4) {
+      break;
+
+  case '4': 
     return -(300000)*(1/(dist(q.x, q.y, width/2, height/2)));
-  }
 
- else if (potential == 5) {
+  case '5':
     return (10.0/(nodeNum*nodeNum))*(sq(q.x-width/2));
-  }
 
-  else {
+  default:
     return 0;
   }
  }
@@ -247,19 +262,18 @@ function energyBars(){
 
     rect(width-60, 2*height/3, 10, -(K_/most)*100);
     
-
     stroke(0, 200, 0);
     fill(0, 200, 0);
     rect(width-40, 2*height/3, 10, -(U_/most)*100);
     fill(0);
    
-
     stroke(0, 0, 200);
     fill(0, 0, 200);
 
     rect(width-20, 2*height/3, 10, (-(K_-U_)/most)*100);
     fill(0);
     stroke(0,0,0);
+    strokeWeight(0.2);
     text("K", width-60+2, height/6-10);
     text("U", width-40+2, height/6-10);
     text("S", width-20+2, height/6-10);
