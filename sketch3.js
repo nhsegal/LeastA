@@ -230,7 +230,7 @@ function mouseClicked() {
    initialU = calculateU();
    initialK = calculateK();
    initialAction = calculateK() - calculateU();  
-   most = max(initialAction, initialU, abs(initialK));  
+    most = 100000;//max(initialAction, initialU, abs(initialK)); 
   }
 }
 
