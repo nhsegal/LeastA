@@ -202,7 +202,7 @@ if (nodeNum != nodeNumSlider.value()){
    initialU = calculateU();
    initialK = calculateK();
    initialAction = calculateK() - calculateU();  
-   most = max(initialAction, initialU, abs(initialK)); 
+   most = 100;//max(initialAction, initialU, abs(initialK)); 
   }
 }
 
