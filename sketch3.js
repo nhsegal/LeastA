@@ -165,7 +165,7 @@ function calculateU() {
 function getPE(q) {
   switch (potential) {
   case '1':
-      return -(2000/(nodeNum*nodeNum)*(q.y) -3800000/(nodeNum*nodeNum)  );
+      return -(20000/(nodeNum)*(q.y) -38000000/(nodeNum)  );
     
   case '2': 
     return -(2000/(nodeNum*nodeNum)*(q.x) - 1900000/(nodeNum*nodeNum) );  
