@@ -18,7 +18,13 @@ var most=100;
 var K_;
 var U_;
 var reset;
+var arrow;
+var arrow_x = 100;
+var arrow_y = 250;
 
+var path;
+
+var paths = [];
 
 
 function setup() {
@@ -36,15 +42,17 @@ function setup() {
   reset.parent("myContainer2");
 
   reset.mousePressed(function()  {
+    paths.length = 0;
     nodes.length = 0;
     nodeNum = nodeNumSlider.value();
     for (var i = 0; i<nodeNum; i++) {
       nodes.push(new Node(map(i, 0, nodeNum-1, 30, width-80), height/2));
     }
-    initialU = calculateU();
-    initialK = calculateK();
-    initialAction = calculateK() - calculateU();  
-     most = 10000;// max(initialAction, initialU, abs(initialK));  
+   //paths = new Path;
+    path.push(nodes);
+   // initialU = calculateU();
+    //initialK = calculateK();
+    //initialAction = calculateK() - calculateU();  
   });
 
   stroke(100);
@@ -52,10 +60,17 @@ function setup() {
   for (var i = 0; i<nodeNumSlider.value(); i++) {
     nodes.push(new Node(map(i, 0, nodeNumSlider.value()-1, 30, width-80), height/2));
   }
-  initialU = calculateU();
-  initialK = calculateK();
-  initialAction = calculateK() - calculateU();  
-  most = 10000;//max(initialAction, initialU, abs(initialK));  
+  path = new Path;
+  path.push(nodes);
+  path.hello();
+
+  //paths[0].getAction(); 
+
+  //initialU = calculateU();
+  //initialK = calculateK();
+  //initialAction = calculateK() - calculateU();  
+  
+  arrow = new actionArrow(arrow_x, arrow_y, 10, 20);
 }
 
 function draw() {
@@ -88,17 +103,9 @@ function draw() {
   }
 
   nodeNumSlider.mouseReleased(numCheck);
-  
-  for (var i = 0; i<nodes.length; i++) {
-    nodes[i].clickedOn();
-    nodes[i].display();
-    if (i>0) {
-      stroke(0);
-      strokeWeight(2);
-      line(nodes[i].x, nodes[i].y, nodes[i-1].x, nodes[i-1].y);
-    }
-  }
-  energyBars(); 
+ 
+  //arrow.angle = ( paths.getAction() )/4000;
+  arrow.display();
 }
 
 function grid(y) {
@@ -138,24 +145,51 @@ function Node(ix, iy) {
   }
 }
 
-function calculateK() {
-  var K = 0;
-  for (var i=0; i<nodes.length; i++) {  
-    if (i>0) {
-      K = K + sq(dist(nodes[i].x, nodes[i].y, nodes[i-1].x, nodes[i-1].y));
-    }
+function Path(_nodes) {
+  this.hello = function(){
+    console.log("here");
   }
-  K = K*(nodeNum-1);
-  return K;
+
+  this.display = function() {     
+    for (var i = 0; i<_nodes.length; i++) {
+      _nodes[i].clickedOn();
+      _nodes[i].display();
+      if (i>0) {
+        stroke(0);
+        strokeWeight(2);
+        line(_nodes[i].x, _nodes[i].y, _nodes[i-1].x, _nodes[i-1].y);
+      }
+    } 
+  }
+
+  this.calculateK = function() {
+    var K = 0;
+    for (var i=0; i<_nodes.length; i++) {  
+      if (i>0) {
+        K = K + sq(dist(_nodes[i].x, _nodes[i].y, _nodes[i-1].x, _nodes[i-1].y));
+      }
+    }
+    K = K*(nodeNum-1);
+    return K;
+  }
+
+  this.calculateU = function() {
+    var U = 0;
+    for (var i=0; i<_nodes.length; i++) {  
+      U = U + getPE(_nodes[i]);
+    }
+    return U;
+  }
+
+  this.getAction = function() {
+    var pathAction = 0;
+    pathAction = this.calculateK() - this.calculateU();
+    return pathAction;
+  }
 }
 
-function calculateU() {
-  U = 0;
-  for (var i=0; i<nodes.length; i++) {  
-    U = U + getPE(nodes[i]);
-  }
-  return U;
-}
+
+
 
 function getPE(q) {
   switch (potential) {
@@ -247,43 +281,46 @@ function optimizer() {
   }  
 }
 
-function energyBars(){
-  stroke(200, 0, 0);
-  fill(200, 0, 0);
-  var K_ = calculateK();
-  var U_ = calculateU();
+function splitter() {
+  var jump = 10;
+  for (var j = 0; j<4; j++) {
+    for (var i = 1;  i<nodeNumSlider.value()-1; i++) {
+      paths.push(new Path());
+    } 
+  }
+}
 
-  rect(width-60, 2*height/3, 10, -(K_/most));
+
+function actionArrow(x_, y_, angle_, len_){
+  this.x = x_;
+  this.y = y_;
+  this.angle = angle_;
+  this.len = len_;
+  
+  this.display = function() {
+  strokeWeight(2);
+  stroke(0);
+  //smooth();
     
-  stroke(0, 200, 0);
-  fill(0, 200, 0);
-  rect(width-40, 2*height/3, 10, -(U_/most));
-  fill(0);
-   
-  stroke(0, 0, 200);
-  fill(0, 0, 200);
-
-  rect(width-20, 2*height/3, 10, (-(K_-U_)/most));
-  fill(0);
-  stroke(0,0,0);
-  strokeWeight(0.2);
-  textAlign(LEFT);
-  text("K", width-60+2, height/6-10);
-  text("U", width-40+2, height/6-10);
-  text("S", width-20+2, height/6-10);
-  text("Kinetic   = ", width/2, 17);
-
-  text("Potential = ", width/2, 34);
-  text("Action    =  ", width/2, 51);
-
-  textAlign(RIGHT);
-  text(String(Math.round( calculateK()/100 )), width/2 + 155, 17);
-  text(String(Math.round( calculateU()/100 )), width/2 + 155, 34);
-  text(String(Math.round( calculateK()/100 - calculateU()/100 )), width/2 + 155, 51);
-
-
-
-
+  push();
+    translate(this.x, this.y);
+    rotate(this.angle);
+    line(0, 0, this.len, 0);
+    
+    push();
+      translate(this.len, 0);
+      rotate(atan(PI/6));
+      line(0,0, -this.len/10, 0);
+    pop();
+    
+    push();
+      translate(this.len, 0);
+      rotate(atan(-PI/6));
+      line(0,0, -this.len/10, 0);
+    pop();
+    
+  pop(); 
+  }
 }
 
 function myFunction() {
