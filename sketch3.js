@@ -1,11 +1,5 @@
 var nodeNumSlider;
 
-var pChoice0;
-var pChoice1;
-var pChoice2;
-var pChoice3;
-var pChoice4;
-var pChoice5;
 
 var nodes = [];
 var potential = 1;
