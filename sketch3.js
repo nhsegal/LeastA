@@ -1,6 +1,5 @@
 var nodeNumSlider;
 
-
 var nodes = [];
 var potential = 1;
 var nodeNum = 9;
@@ -12,8 +11,6 @@ var most=100;
 var K_;
 var U_;
 var reset;
-
-
 
 function setup() {
   var cnv = createCanvas(800, 400);
@@ -58,25 +55,32 @@ function draw() {
   grid(true);
   myFunction();
 
-  if (potential == 3) {
-    strokeWeight(2);
-    stroke(0, 250, 0);
-    line(0, width/2+height/2, width/2+height/2, 0);
-  }
+  switch (potential) {
+    case '0':
+    case '1':
+    case '2': 
+    break;
 
-  if (potential == 4) {
-    fill(0, 255, 0);
-    ellipse(width/2, height/2, 12, 12);
-  }
+    case '3':  //refraction
+      strokeWeight(2);
+      stroke(0, 250, 0);
+      line(0, width/2+height/2, width/2+height/2, 0);
+    break;
 
-  if (potential == 5) {
-    strokeWeight(2);
-    stroke(120);  
-    for (var i = 0; i<height; i=i+10) {
-      line(width/2, i, width/2, i+5);
-    }
-  }
+    case '4': //central force
+      fill(0, 255, 0);
+      ellipse(width/2, height/2, 12, 12);
+    break;
 
+    case '5': //dotted centerline for harmonic
+      strokeWeight(2);
+      stroke(120);  
+      for (var i = 0; i<height; i=i+10) {
+        line(width/2, i, width/2, i+5);
+      }
+    break;
+  }
+   
   if (keyIsPressed===true) {
     optimizer();
   }
@@ -99,10 +103,10 @@ function grid(y) {
   if (y == true) {
     strokeWeight(0.5);
     stroke(150);
-    for (var i = 1; i<9*2; i++) {
+    for (var i = 1; i<18; i++) {
       line(width, .5*i*height/9, 0, .5*i*height/9);
     }
-    for (var i = 1; i<9*4; i++) {
+    for (var i = 1; i<36; i++) {
       line(.5*i*height/9, 0, .5*i*height/9, height);
     }
   }
@@ -274,10 +278,6 @@ function energyBars(){
   text(String(Math.round( calculateK()/100 )), width/2 + 155, 17);
   text(String(Math.round( calculateU()/100 )), width/2 + 155, 34);
   text(String(Math.round( calculateK()/100 - calculateU()/100 )), width/2 + 155, 51);
-
-
-
-
 }
 
 function myFunction() {
