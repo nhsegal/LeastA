@@ -116,25 +116,26 @@ function Node(ix, iy) {
   this.x = ix;
   this.y = iy;
   this.selected = false;
-
-  this.display = function() {
-    noStroke();
-    if (this.selected == false) {
-      fill(0);
-    }
-    else {
-      fill(255, 0, 0);
-    }
-    ellipse(this.x, this.y, 8, 8);
+}
+  
+Node.prototype.display = function() {
+  noStroke();
+  if (this.selected == false) {
+    fill(0);
   }
+  else {
+    fill(255, 0, 0);
+  }
+  ellipse(this.x, this.y, 8, 8);
+}
 
-  this.clickedOn = function() {
-    if (this.selected == true) {
-      this.x = mouseX;
-      this.y = mouseY;
-    }
+Node.prototype.clickedOn = function() {
+  if (this.selected == true) {
+    this.x = mouseX;
+    this.y = mouseY;
   }
 }
+
 
 function calculateK() {
   var K = 0;
