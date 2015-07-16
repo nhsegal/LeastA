@@ -26,6 +26,11 @@ function setup() {
   reset = createButton('Reset', 1);
   reset.parent("myContainer2");
 
+  addEventListener("keydown", function(event){
+    optimizer();
+    event.preventDefault()
+  });
+
   reset.mousePressed(function()  {
     nodes.length = 0;
     nodeNum = nodeNumSlider.value();
@@ -81,9 +86,10 @@ function draw() {
     break;
   }
    
-  if (keyIsPressed===true) {
-    optimizer();
-  }
+  //if (keyIsPressed===true) {
+  //  optimizer();
+  //  preventDefault();
+  //}
 
   nodeNumSlider.mouseReleased(numCheck);
   
@@ -227,7 +233,7 @@ function mouseClicked() {
 }
 
 function optimizer() {
-  var jump = 1;
+  var jump = 2;
   if (potential ==3){
     jump = 20;
   }
